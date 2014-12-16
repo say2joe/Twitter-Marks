@@ -1,14 +1,54 @@
-function BookmarkGenerator(XHR, user) {
+function BookmarkGenerator(user) {
 
-    var data = { /* XHR JSON response */ },
-        bookmarks = { /* URL Bookmarks */ };
+    var Chromemarks = chrome.bookmarks,
+        rootFolder = 'Twitter-Marks',
+        bookmarks = {};
 
-    this.createBookmarks = function(event) {
-        data = JSON.parse(XHR.responseText);
-        data[i].user.name
-        data.forEach(function(v, i, a){
-            if ()
-        });
+    this.getBookmarkBar = function() {
+        return 0;
+    };
+
+    this.createFolder = function(folder, pID, cb) {
+        if (!folder) folder = rootFolder;
+        if (!pID) pID = getBookmarkBar();
+        if (!cb) cb = function(){};
+        Chromemarks.create({
+            parentId: pID,
+            title: folder
+        }, cb);
+    };
+
+    this.createBookmarks = function(data) {
+        function createUserMarks(aBTN) {
+            function setBookmarks(aBTN) {
+                data[user].forEach(function(mark, i, a){
+                    Chromemarks.create({
+                        parentId: aBTN.id,
+                        title: mark.title,
+                        url: mark.url
+                    });
+                });
+            }
+            for (var user in data) {
+                createFolder(user, aBTN.id, setBookmarks);
+            }
+        }
+        Chromemarks.search(rootFolder,
+            function(aBTN) {
+                bookmarks = data;
+                if (aBTN.length) {
+                    Chromemarks.removeTree(aBTN[0], function(){
+                        createFolder(null, null, createUserMarks);
+                    });
+                } else {
+                    createFolder(null, null, createUserMarks);
+                }
+            }
+        );
+    };
+
+    this.getBookmarks = function() {
+        return this.bookmarks;
     };
 
     this.user = user;
@@ -18,63 +58,70 @@ var TwitterAPI = {
 
     user: 'say2joe',
 
-    favorites: 'favorites/list.json',
+    favorites: {/* title, url */},
 
-    api: 'https://api.twitter.com/1.1/',
+    API: {
+        domain: 'https://api.twitter.com/1.1/',
+        favorites: 'favorites/list.json'
+    },
+
+    authenticate: function() {
+
+    },
+
+    createBookmarks: function() {
+        var bookmarks = new BookmarkGenerator(this.user);
+        bookmarks.createBookmarks(this.favorites);
+    },
+
+    filterFavorites: function() {
+        var favorites = TwitterAPI.favorites,
+            data = JSON.parse(this.response);
+
+        if (data.errors.length) {
+            if (data.errors[0].code === 215) {
+                TwitterAPI.authenticate();
+            }
+        }
+
+        data.forEach(function(tweet, i, a){
+
+            var user = tweet.user.name,
+                urls = tweet.entities.urls,
+                title = tweet.text.substr(0,70);
+
+            urls.forEach(function(url, i, a){
+                var folder = favorites[user],
+                    bookmark = {
+                        title: title, url: url
+                    };
+                if (!group) {
+                    favorites[folder] = [bookmark];
+                } else {
+                    group.push(bookmark);
+                }
+            });
+
+        });
+
+        this.createBookmarks();
+        data = null;
+    },
 
     getFavorites: function() {
         var req = new XMLHttpRequest(),
             query = '?screen_name=' + this.user,
-            marks = new BookmarkGenerator(req, this.user);
-        req.open("GET", this.api + this.favorites + query, true);
-        req.onload = marks.createBookmarks;
-        req.send(null);
+            url = this.API.domain + this.API.favorites;
+        req.open("GET", url + query, true);
+        req.onload = this.filterFavorites;
+        req.send();
     }
 
 };
 
-var BookmarkGeneratorBlah = {
-
-    getFavorites: function() {
-
-    },
-
-    /**
-    * Handle the 'onload' event of our kitten XHR request, generated in
-    * 'requestKittens', by generating 'img' elements, and stuffing them into
-    * the document for display.
-    *
-    * @param {ProgressEvent} e The XHR ProgressEvent.
-    * @private
-    */
-    showPhotos_: function (e) {
-        var kittens = e.target.responseXML.querySelectorAll('photo');
-        for (var i = 0; i < kittens.length; i++) {
-            var img = document.createElement('img');
-            img.src = this.constructKittenURL_(kittens[i]);
-            img.setAttribute('alt', kittens[i].getAttribute('title'));
-            document.body.appendChild(img);
-        }
-    },
-
-    /**
-    * Given a photo, construct a URL using the method outlined at
-    * http://www.flickr.com/services/api/misc.urlKittenl
-    *
-    * @param {DOMElement} A kitten.
-    * @return {string} The kitten's URL.
-    * @private
-    */
-    constructKittenURL_: function (photo) {
-        return "http://farm" + photo.getAttribute("farm") +
-        ".static.flickr.com/" + photo.getAttribute("server") +
-        "/" + photo.getAttribute("id") +
-        "_" + photo.getAttribute("secret") +
-        "_s.jpg";
+document.addEventListener(
+    'DOMContentLoaded',
+    function init () {
+        TwitterAPI.getFavorites();
     }
-};
-
-// Run our kitten generation script as soon as the document's DOM is ready.
-document.addEventListener('DOMContentLoaded', function () {
-    kittenGenerator.requestKittens();
-});
+);
