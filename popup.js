@@ -1,20 +1,42 @@
+function BookmarkGenerator(XHR, user) {
+
+    var data = { /* XHR JSON response */ },
+        bookmarks = { /* URL Bookmarks */ };
+
+    this.createBookmarks = function(event) {
+        data = JSON.parse(XHR.responseText);
+        data[i].user.name
+        data.forEach(function(v, i, a){
+            if ()
+        });
+    };
+
+    this.user = user;
+}
+
 var TwitterAPI = {
 
     user: 'say2joe',
 
+    favorites: 'favorites/list.json',
+
     api: 'https://api.twitter.com/1.1/',
 
-    favorites: 'favorites/list.json'
+    getFavorites: function() {
+        var req = new XMLHttpRequest(),
+            query = '?screen_name=' + this.user,
+            marks = new BookmarkGenerator(req, this.user);
+        req.open("GET", this.api + this.favorites + query, true);
+        req.onload = marks.createBookmarks;
+        req.send(null);
+    }
 
 };
 
-var BookmarkGenerator = {
+var BookmarkGeneratorBlah = {
 
     getFavorites: function() {
-        var req = new XMLHttpRequest();
-        req.open("GET", this.searchOnFlickr_, true);
-        req.onload = this.showPhotos_.bind(this);
-        req.send(null);
+
     },
 
     /**
