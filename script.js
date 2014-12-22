@@ -66,7 +66,7 @@ var TwitterAPI = {
     },
 
     authenticate: function() {
-
+        // placehoder for now.
     },
 
     createBookmarks: function() {
@@ -112,16 +112,24 @@ var TwitterAPI = {
         var req = new XMLHttpRequest(),
             query = '?screen_name=' + this.user,
             url = this.API.domain + this.API.favorites;
-        req.open("GET", url + query, true);
+        req.open('GET', url + query, true);
         req.onload = this.filterFavorites;
         req.send();
     }
 
 };
 
+var chromeExOAuthConfig = { // Naming convention is Google's.
+    'request_url': 'https://api.twitter.com/oauth/request_token',
+    'authorize_url': 'https://api.twitter.com/oauth/authorize',
+    'access_url': 'https://api.twitter.com/oauth/access_token',
+    'consumer_secret': 'anonymous',
+    'consumer_key': 'anonymous',
+    'app_name': 'Twitter-Marks'
+};
+
 document.addEventListener(
-    'DOMContentLoaded',
-    function init () {
+    'DOMContentLoaded', function init() {
         TwitterAPI.getFavorites();
     }
 );

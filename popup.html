@@ -1,23 +1,24 @@
 <!doctype html>
 <html>
-  <head>
+<head>
     <title>Twitter Marks</title>
     <style>
-      body {
-        min-width: 357px;
+    body {
+        min-width: 222px;
         overflow-x: hidden;
-      }
-      img {
-        margin: 5px;
-        border: 2px solid black;
-        vertical-align: middle;
-        width: 75px;
-        height: 75px;
-      }
+        text-align: center;
+    }
     </style>
-    <script src="popup.js"></script>
-  </head>
-  <body>
-
-  </body>
+    <script src="chrome_ex_oauthsimple.js"></script>
+    <script src="chrome_ex_oauth.js"></script>
+    <script src="onload.js"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+    <p>
+        <button onclick="TwitterAPI.getFavorites()">
+            Get latest Twitter favorites (max 200)!
+        </button>
+    </p>
+</body>
 </html>
